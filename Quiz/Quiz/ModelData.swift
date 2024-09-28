@@ -7,10 +7,7 @@ struct QuestionModel: Codable, Hashable, Identifiable {
     var incorrectAnswers: [String]
     var difficulty: String
     var category: String
-    
-    var options: [String] {
-        (incorrectAnswers + [correctAnswer]).shuffled()
-    }
+    var options: [String]
     
     init(id: String, question: String, correctAnswer: String, incorrectAnswers: [String], difficulty: String, category: String) {
         self.id = id
@@ -19,6 +16,7 @@ struct QuestionModel: Codable, Hashable, Identifiable {
         self.incorrectAnswers = incorrectAnswers
         self.difficulty = difficulty
         self.category = category
+        self.options = (incorrectAnswers + [correctAnswer]).shuffled()
     }
     
     enum CodingKeys: String, CodingKey {
@@ -39,6 +37,7 @@ struct QuestionModel: Codable, Hashable, Identifiable {
         incorrectAnswers = try container.decode([String].self, forKey: .incorrectAnswers)
         difficulty = try container.decode(String.self, forKey: .difficulty)
         category = try container.decode(String.self, forKey: .category)
+        options = (incorrectAnswers + [correctAnswer]).shuffled()
     }
     
     enum QuestionCodingKeys: String, CodingKey {

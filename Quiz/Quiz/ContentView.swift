@@ -7,31 +7,36 @@
 
 import SwiftUI
 
-struct ContentView: View {    
+struct ContentView: View {
     @StateObject private var modelData = ModelData()
+    @State private var selectedAnswers: [String?] = []
     @State var index = 0
     
-    
     var body: some View {
-        VStack{
-            
+        VStack {
             Text("Quiz")
                 .padding(.top, 30)
                 .padding(.bottom, 10)
                 .font(.largeTitle)
     
             if !modelData.questions.isEmpty {
-                Question(question: modelData.questions[index])
+                Question(
+                    question: modelData.questions[index],
+                    selectedAnswer: Binding(
+                        get: { selectedAnswers.indices.contains(index) ? selectedAnswers[index] : nil },
+                        set: { selectedAnswers.indices.contains(index) ? selectedAnswers[index] = $0 : selectedAnswers.append($0) }
+                    )
+                )
             } else {
                 ProgressView("Loading questions...")
             }
             
             Spacer()
             
-            HStack{
-                Button{
+            HStack {
+                Button {
                     index -= 1
-                } label : {
+                } label: {
                     Text("Previous")
                         .frame(width: 90, height: 30)
                         .bold()
@@ -59,12 +64,13 @@ struct ContentView: View {
         }
         .task {
             await modelData.fetchQuestions()
-            
+            selectedAnswers = Array(repeating: nil, count: modelData.questions.count)
         }
     }
 }
 
 #Preview {
     ContentView()
-    
 }
+
+
