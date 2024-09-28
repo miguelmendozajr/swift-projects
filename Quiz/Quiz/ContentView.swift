@@ -11,10 +11,11 @@ struct ContentView: View {
     @StateObject private var modelData = ModelData()
     @State var index = 0
     
+    
     var body: some View {
         VStack{
             
-            Text("HallPoll")
+            Text("Quiz")
                 .padding(.top, 30)
                 .padding(.bottom, 10)
                 .font(.largeTitle)

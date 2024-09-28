@@ -1,10 +1,3 @@
-//
-//  Question.swift
-//  Quiz
-//
-//  Created by Miguel Mendoza on 27/09/24.
-//
-
 import SwiftUI
 
 struct Question: View {
@@ -16,18 +9,24 @@ struct Question: View {
     ]
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 20) {
-            Text(question.question)
-                .font(.title2)
-                .fontWeight(.bold)
-            
-            LazyVGrid(columns: columns, spacing: 20) {
-                ForEach(question.options, id: \.self) { option in
-                    Answer(option: option)
+        GeometryReader { geometry in
+            VStack(alignment: .leading, spacing: 20) {
+                ScrollView {
+                    Text(question.question)
+                        .font(.title2)
+                        .fontWeight(.bold)
+                        .padding(.bottom)
+                }
+                
+                LazyVGrid(columns: columns, spacing: 20) {
+                    ForEach(question.options, id: \.self) { option in
+                        Answer(option: option)
+                            .frame(height: min((geometry.size.height - 150) / 2, 200)) // Adjust as needed
+                    }
                 }
             }
+            .padding()
         }
-        .padding()
     }
 }
 
@@ -37,7 +36,7 @@ struct Answer: View {
     var body: some View {
         Text(option)
             .padding()
-            .frame(maxWidth: .infinity)
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(Color.blue.opacity(0.1))
             .cornerRadius(10)
     }
