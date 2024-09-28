@@ -1,71 +1,57 @@
 import SwiftUI
 
-struct Question: View {
+struct QuestionView: View {
     var question: QuestionModel
-    let columns = [
-        GridItem(.flexible()),
-        GridItem(.flexible())
-    ]
+    let columns = Array(repeating: GridItem(.flexible()), count: 2)
     
-    @Binding var selectedAnswer: String?
-    @State private var isAnswerSelected = false
+    @Binding var selected: String?
     
     var body: some View {
-        GeometryReader { geometry in
-            VStack(alignment: .leading, spacing: 20) {
-                ScrollView {
-                    Text(question.question)
-                        .font(.title2)
-                        .padding(.bottom)
+        VStack(alignment: .leading, spacing: 20) {
+            Text(question.question)
+                .font(.title2)
+                .frame(maxWidth: .infinity, minHeight: 130)
+            
+            LazyVGrid(columns: columns, spacing: 20) {
+                ForEach(question.options, id: \.self) { option in
+                    AnswerView(option: option, isCorrect: option == question.correctAnswer, selected: $selected)
                 }
-                
-                LazyVGrid(columns: columns, spacing: 20) {
-                    ForEach(question.options, id: \.self) { option in
-                        Answer(selected: $selectedAnswer, isAnswerSelected: $isAnswerSelected, option: option, isCorrect: option == question.correctAnswer)
-                            .frame(height: min((geometry.size.height - 100) / 2, 180))
-                    }
-                }
-            }
-            .padding()
-            .onChange(of: selectedAnswer) { _ in
-                isAnswerSelected = selectedAnswer != nil
             }
         }
+        .padding()
     }
 }
 
-struct Answer: View {
-    @Binding var selected: String?
-    @Binding var isAnswerSelected: Bool
-
+struct AnswerView: View {
     var option: String
     var isCorrect: Bool
+    @Binding var selected: String?
     
     var body: some View {
         Text(option)
             .padding()
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .frame(maxWidth: .infinity, minHeight: 180)
             .background(backgroundColor)
             .cornerRadius(10)
             .onTapGesture {
-                if !isAnswerSelected {
+                if selected == nil {
                     selected = option
                 }
             }
     }
     
     private var backgroundColor: Color {
-        if isAnswerSelected {
-            if selected == option {
-                return isCorrect ? Color.green.opacity(0.3) : Color.red.opacity(0.3)
-            } else if isCorrect {
-                return Color.green.opacity(0.3)
-            }
+        guard let selected = selected else { return Color.blue.opacity(0.1) }
+        if selected == option {
+            return isCorrect ? Color.green.opacity(0.3) : Color.red.opacity(0.3)
+        } else if isCorrect {
+            return Color.green.opacity(0.3)
         }
         return Color.blue.opacity(0.1)
     }
 }
 
+
 #Preview {
-    Question(question: ModelData.sampleQuestion, selectedAnswer: .constant(nil))
+    QuestionView(question: ModelData.sampleQuestion, selected: .constant(nil))
 }
