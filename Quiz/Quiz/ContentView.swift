@@ -9,12 +9,52 @@ import SwiftUI
 
 struct ContentView: View {    
     @StateObject private var modelData = ModelData()
+    @State var index = 0
+    
     var body: some View {
-        NavigationView{
-            List(modelData.questions){ question in
-                Question(question: question)
+        VStack{
+            
+            Text("HallPoll")
+                .padding(.top, 30)
+                .padding(.bottom, 10)
+                .font(.largeTitle)
+    
+            if !modelData.questions.isEmpty {
+                Question(question: modelData.questions[index])
+            } else {
+                ProgressView("Loading questions...")
             }
-            .navigationTitle("Questions")
+            
+            Spacer()
+            
+            HStack{
+                Button{
+                    index -= 1
+                } label : {
+                    Text("Previous")
+                        .frame(width: 90, height: 30)
+                        .bold()
+                }
+                .buttonStyle(.borderedProminent)
+                .tint(.gray)
+                .disabled(index == 0)
+                .opacity(index == 0 ? 0.5 : 1)
+                
+                Spacer()
+                
+                Button {
+                    index += 1
+                } label: {
+                    Text("Next")
+                        .frame(width: 90, height: 30)
+                        .bold()
+                }
+                .buttonStyle(.borderedProminent)
+                .tint(.blue)
+                .opacity(((index + 1) == modelData.questions.count) ? 0.5 : 1)
+                .disabled((index + 1) == modelData.questions.count)
+            }
+            .padding(30)
         }
         .task {
             await modelData.fetchQuestions()

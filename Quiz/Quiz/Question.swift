@@ -8,11 +8,38 @@
 import SwiftUI
 
 struct Question: View {
-    var question : QuestionModel
+    var question: QuestionModel
+    
+    let columns = [
+        GridItem(.flexible()),
+        GridItem(.flexible())
+    ]
+    
     var body: some View {
-        Text(question.question)
-            .font(Font.title2)
-            .bold(true)
+        VStack(alignment: .leading, spacing: 20) {
+            Text(question.question)
+                .font(.title2)
+                .fontWeight(.bold)
+            
+            LazyVGrid(columns: columns, spacing: 20) {
+                ForEach(question.options, id: \.self) { option in
+                    Answer(option: option)
+                }
+            }
+        }
+        .padding()
+    }
+}
+
+struct Answer: View {
+    var option: String
+    
+    var body: some View {
+        Text(option)
+            .padding()
+            .frame(maxWidth: .infinity)
+            .background(Color.blue.opacity(0.1))
+            .cornerRadius(10)
     }
 }
 
