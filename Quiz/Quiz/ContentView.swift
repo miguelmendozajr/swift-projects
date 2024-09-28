@@ -7,18 +7,23 @@
 
 import SwiftUI
 
-struct ContentView: View {
+struct ContentView: View {    
+    @StateObject private var modelData = ModelData()
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+        NavigationView{
+            List(modelData.questions){ question in
+                Question(question: question)
+            }
+            .navigationTitle("Questions")
         }
-        .padding()
+        .task {
+            await modelData.fetchQuestions()
+            
+        }
     }
 }
 
 #Preview {
     ContentView()
+    
 }
