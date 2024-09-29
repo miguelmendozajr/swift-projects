@@ -10,7 +10,7 @@ struct QuestionView: View {
         VStack(alignment: .leading, spacing: 20) {
             Text(question.question)
                 .font(.title2)
-                .frame(maxWidth: .infinity, minHeight: 130)
+                .frame(maxWidth: .infinity, minHeight: 160)
             
             LazyVGrid(columns: columns, spacing: 20) {
                 ForEach(question.options, id: \.self) { option in
@@ -30,7 +30,7 @@ struct AnswerView: View {
     var body: some View {
         Text(option)
             .padding()
-            .frame(maxWidth: .infinity, minHeight: 180)
+            .frame(maxWidth: .infinity, minHeight: 200)
             .background(backgroundColor)
             .cornerRadius(10)
             .onTapGesture {
