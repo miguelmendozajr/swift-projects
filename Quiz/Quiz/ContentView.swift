@@ -1,27 +1,89 @@
 import SwiftUI
 
+import Charts
+
+struct DonutChartData: Identifiable {
+    let id = UUID()
+    let value: Double
+    let color: Color
+}
+
+struct DonutChart: View {
+    let data: [DonutChartData]
+    
+    var body: some View {
+        Chart(data) { item in
+            SectorMark(
+                angle: .value("Value", item.value),
+                innerRadius: .ratio(0.6),
+                outerRadius: .ratio(1.0)
+            )
+            .foregroundStyle(item.color)
+        }
+        .chartLegend(.hidden)
+        .frame(height: 200)
+    }
+}
+
 struct SuccessView: View {
     @Binding var isPresented: Bool
     var onNewQuestions: () async -> Void
-
+    let answers: Int
+    let correctAnswers: Int
+    
+    private var incorrectAnswers: Int {
+        answers - correctAnswers
+    }
+    
+    private var chartData: [DonutChartData] {
+        [
+            DonutChartData(value: Double(correctAnswers), color: .blue),
+            DonutChartData(value: Double(incorrectAnswers), color: Color.blue.opacity(0.1))
+        ]
+    }
+    
     var body: some View {
-        VStack {
-            Text("Form submitted successfully!")
+        VStack(spacing: 20) {
+            DonutChart(data: chartData)
+                .frame(width: 200, height: 200)
+            
+            Text("You got \(correctAnswers) out of \(answers) correct!")
+                .font(.title2)
+                .padding()
+            
             Button("Try new questions") {
                 isPresented = false
                 Task {
                     await onNewQuestions()
                 }
             }
+            .padding()
+            .frame(maxWidth: .infinity)
+            .background(Color.blue)
+            .foregroundColor(.white)
+            .cornerRadius(10)
+            .padding(.horizontal, 40)
         }
+        .padding()
     }
 }
+
 
 struct ContentView: View {
     @StateObject private var modelData = ModelData()
     @State private var selectedAnswers: [String?] = []
     @State private var index = 0
     @State private var allAnswered = false
+    
+    var correctAnswers : Int {
+        var count = 0
+        for i in 0...modelData.questions.count - 1{
+            if modelData.questions[i].correctAnswer == selectedAnswers[i]{
+                count += 1
+            }
+        }
+        return count
+    }
     
     var body: some View {
         NavigationView {
@@ -37,7 +99,7 @@ struct ContentView: View {
                 await fetchNewQuestions()
             }
             .fullScreenCover(isPresented: $allAnswered) {
-                SuccessView(isPresented: $allAnswered, onNewQuestions: fetchNewQuestions)
+                SuccessView(isPresented: $allAnswered, onNewQuestions: fetchNewQuestions, answers: modelData.questions.count, correctAnswers: correctAnswers)
             }
         }
     }
