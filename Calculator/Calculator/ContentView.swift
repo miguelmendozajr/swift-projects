@@ -15,29 +15,9 @@ struct ContentView: View {
     }
 }
 
-struct Calculator: View {
-    
-    var body: some View {
-        VStack{
-            IntergerButton(
-        }
-    }
-}
 
-
-struct IntergerButton: View {
-    @Binding var total : Int
-    var value : Int
-    var body: some View {
-        Button{
-            total = total * 10 + value
-        } label: {
-            Text("\(value)")
-        }
-        
-    }
-}
 
 #Preview {
+    print(evaluate(tokens: ["3", "+", "5", "*", "(", "2", "-", "4", ")", "/","2"]))
     ContentView()
 }
